@@ -16,7 +16,7 @@ import {
   Info,
 } from 'lucide-react';
 import { AppStore } from '@/lib/store';
-import { StudyDocument, DocumentCategory, DocumentChunk } from '@/lib/types';
+import { StudyDocument, DocumentCategory, DocumentChunk, UserProfile } from '@/lib/types';
 import { chunkDocument } from '@/lib/rag/chunker';
 import CitationCard from '@/components/CitationCard';
 
@@ -29,11 +29,19 @@ export default function UploadPage() {
   const [previewDoc, setPreviewDoc] = useState<StudyDocument | null>(null);
   const [previewChunks, setPreviewChunks] = useState<DocumentChunk[]>([]);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [user, setUser] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     const store = AppStore.getInstance();
     store.initStore();
     setDocuments(store.getDocuments());
+    setUser(store.getUser());
+
+    const handleUserChange = () => {
+      setUser(store.getUser());
+    };
+    window.addEventListener('gapfinder_user_changed', handleUserChange);
+    return () => window.removeEventListener('gapfinder_user_changed', handleUserChange);
   }, []);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,12 +111,13 @@ export default function UploadPage() {
         <div className="flex items-center gap-2">
           <UploadCloud className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
           <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
-            Upload Study Materials
+            {user?.role === 'teacher' ? 'Upload Class Learning Materials' : 'Upload Study Materials & Past Papers'}
           </h1>
         </div>
         <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-3xl">
-          Upload your official syllabus, textbook excerpts, lecture notes, and past question papers.
-          Documents are parsed into semantic chunks to ground all diagnostic quizzes and revision plans.
+          {user?.role === 'teacher'
+            ? 'Upload official course syllabus, textbook chapters, lecture slides, and past exam question papers for your class. Documents are parsed into semantic chunks to diagnose class-level misconceptions and performance.'
+            : 'Upload your official syllabus, textbook excerpts, lecture notes, and past question papers. Documents are parsed into semantic chunks to ground all diagnostic quizzes and revision plans.'}
         </p>
       </div>
 

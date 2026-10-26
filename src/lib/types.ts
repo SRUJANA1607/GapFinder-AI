@@ -138,3 +138,42 @@ export interface UserProfile {
     unlockedAt?: string;
   }[];
 }
+
+export interface StudentRecord {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  overallScore: number;
+  quizzesTaken: number;
+  weakTopicsCount: number;
+  weakestTopic: string;
+  streakDays: number;
+  lastActive: string;
+  status: 'Needs Support' | 'On Track' | 'Excelling';
+}
+
+export interface ClassTopicInsight {
+  topicId: string;
+  title: string;
+  unit: string;
+  classAverageScore: number;
+  studentsWeakCount: number;
+  studentsMediumCount: number;
+  studentsStrongCount: number;
+  commonMisconception: string;
+  examFrequency: 'High' | 'Medium' | 'Low';
+  recommendedIntervention: string;
+}
+
+export interface ClassOverviewData {
+  className: string;
+  courseCode: string;
+  semester: string;
+  totalStudents: number;
+  averageScore: number;
+  diagnosticAttemptsCount: number;
+  criticalGapsCount: number;
+  topClassWeaknesses: ClassTopicInsight[];
+  students: StudentRecord[];
+}

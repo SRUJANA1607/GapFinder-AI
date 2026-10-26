@@ -16,8 +16,12 @@ import {
   Award,
   Layers,
   CheckCircle2,
+  GraduationCap,
+  Users,
+  Lightbulb,
+  UploadCloud,
 } from 'lucide-react';
-import { DEMO_USER } from '@/lib/demo-data';
+import { DEMO_STUDENT, DEMO_TEACHER } from '@/lib/demo-data';
 
 export default function HomePage() {
   return (
@@ -26,7 +30,7 @@ export default function HomePage() {
       <div className="text-center max-w-3xl mx-auto space-y-4 pt-4">
         <div className="inline-flex items-center gap-2 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 px-3.5 py-1 text-xs font-bold text-indigo-700 dark:text-indigo-300">
           <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-          <span>Next-Gen Academic Diagnostic & Revision Platform</span>
+          <span>Diagnostic AI for Students & Class Intelligence for Teachers</span>
         </div>
 
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
@@ -34,49 +38,136 @@ export default function HomePage() {
         </h1>
 
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl mx-auto">
-          Most study tools wait for you to ask questions. But students can&apos;t ask about gaps they don’t know they have.
-          <strong className="text-slate-900 dark:text-white"> GapFinder AI</strong> diagnoses hidden blind spots from your syllabus, textbooks, and past papers, and builds an adaptive revision plan.
+          Most study tools wait for questions. But you can&apos;t ask about gaps you don’t know you have.
+          <strong className="text-slate-900 dark:text-white"> GapFinder AI</strong> diagnoses hidden blind spots from your course materials and gives students personal revision plans while giving teachers actionable class-wide intelligence.
         </p>
 
-        {/* CTA Buttons */}
-        <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+        {/* Primary Role CTAs */}
+        <div className="pt-3 flex flex-wrap items-center justify-center gap-3.5">
           <Link
             href="/dashboard"
             className="flex items-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 px-6 py-3 text-xs sm:text-sm font-bold text-white shadow-md shadow-indigo-600/20 hover:scale-[1.02] transition"
           >
-            <span>Launch Evaluation Dashboard</span>
+            <GraduationCap className="w-4 h-4" />
+            <span>Launch Student Dashboard</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
 
           <Link
-            href="/quiz"
+            href="/teacher"
+            className="flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 px-6 py-3 text-xs sm:text-sm font-bold text-white shadow-md shadow-emerald-600/20 hover:scale-[1.02] transition"
+          >
+            <Users className="w-4 h-4" />
+            <span>Launch Teacher Dashboard</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+
+          <Link
+            href="/login"
             className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-5 py-3 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
           >
-            <FileQuestion className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-            <span>Take Diagnostic Quiz</span>
+            <span>Role Sign In</span>
           </Link>
         </div>
 
-        {/* Judge Demo Banner */}
-        <div className="mt-6 clean-card p-4 text-left max-w-2xl mx-auto">
-          <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div className="text-xs space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">
-                  Evaluator Instant Access Mode
-                </span>
-                <span className="rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 font-bold text-[10px]">
-                  Preloaded CS Course
-                </span>
+        {/* Dual Mode Card Preview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 text-left">
+          {/* Student Experience Card */}
+          <div className="clean-card p-5 space-y-3 relative overflow-hidden border-t-4 border-t-indigo-600">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
+                  <GraduationCap className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-sm text-slate-900 dark:text-white">
+                    Student Experience
+                  </h3>
+                  <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                    Primary User
+                  </span>
+                </div>
               </div>
-              <p className="text-slate-600 dark:text-slate-300">
-                Logged in as <strong>{DEMO_USER.name}</strong> ({DEMO_USER.email}).
-                Includes complete Operating Systems syllabus, textbook excerpts, lecture notes, and 3 years of past papers pre-indexed for testing.
-              </p>
+              <span className="rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 text-[10px] font-bold">
+                Alex Mercer
+              </span>
             </div>
+
+            <ul className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                <span>Upload syllabus, notes & past papers</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                <span>Take AI-generated grounded diagnostic quizzes</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                <span>Discover weak, medium & strong knowledge gaps</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                <span>Personalized revision timetable with daily tasks</span>
+              </li>
+            </ul>
+
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline pt-1"
+            >
+              <span>Explore Student Dashboard</span>
+              <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+
+          {/* Teacher Experience Card */}
+          <div className="clean-card p-5 space-y-3 relative overflow-hidden border-t-4 border-t-emerald-600">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+                  <Users className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-sm text-slate-900 dark:text-white">
+                    Teacher Dashboard
+                  </h3>
+                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+                    Secondary User
+                  </span>
+                </div>
+              </div>
+              <span className="rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 text-[10px] font-bold">
+                Prof. Sarah Jenkins
+              </span>
+            </div>
+
+            <ul className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                <span>Upload syllabus & learning materials for a class</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                <span>Review class-level topic performance & gap heatmap</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                <span>Identify commonly misunderstood concepts (34/48 students)</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                <span>Plan remedial sessions & broadcast targeted quizzes</span>
+              </li>
+            </ul>
+
+            <Link
+              href="/teacher"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline pt-1"
+            >
+              <span>Explore Teacher Dashboard</span>
+              <ArrowRight className="w-3 h-3" />
+            </Link>
           </div>
         </div>
       </div>

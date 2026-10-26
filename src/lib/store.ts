@@ -6,13 +6,17 @@ import {
   QuizAttempt,
   RevisionPlan,
   DocumentChunk,
+  ClassOverviewData,
 } from './types';
 import {
   DEMO_USER,
+  DEMO_STUDENT,
+  DEMO_TEACHER,
   DEMO_DOCUMENTS,
   DEMO_TOPICS,
   DEMO_QUESTIONS,
   DEMO_REVISION_PLAN,
+  DEMO_CLASS_DATA,
 } from './demo-data';
 import { chunkDocument } from './rag/chunker';
 import { SimpleVectorStore } from './rag/vector-store';
@@ -25,6 +29,7 @@ const STORAGE_KEYS = {
   ATTEMPTS: 'gapfinder_attempts',
   PLAN: 'gapfinder_plan',
   API_KEY: 'gapfinder_gemini_key',
+  CLASS: 'gapfinder_class_data',
 };
 
 export class AppStore {
@@ -71,6 +76,9 @@ export class AppStore {
     if (!localStorage.getItem(STORAGE_KEYS.ATTEMPTS)) {
       localStorage.setItem(STORAGE_KEYS.ATTEMPTS, JSON.stringify([]));
     }
+    if (!localStorage.getItem(STORAGE_KEYS.CLASS)) {
+      localStorage.setItem(STORAGE_KEYS.CLASS, JSON.stringify(DEMO_CLASS_DATA));
+    }
 
     // Index all documents in vector store
     this.reindexAllChunks();
@@ -84,7 +92,9 @@ export class AppStore {
     localStorage.setItem(STORAGE_KEYS.QUESTIONS, JSON.stringify(DEMO_QUESTIONS));
     localStorage.setItem(STORAGE_KEYS.PLAN, JSON.stringify(DEMO_REVISION_PLAN));
     localStorage.setItem(STORAGE_KEYS.ATTEMPTS, JSON.stringify([]));
+    localStorage.setItem(STORAGE_KEYS.CLASS, JSON.stringify(DEMO_CLASS_DATA));
     this.reindexAllChunks();
+    window.dispatchEvent(new Event('gapfinder_user_changed'));
   }
 
   public reindexAllChunks(): SimpleVectorStore {
@@ -117,7 +127,7 @@ export class AppStore {
     localStorage.setItem(STORAGE_KEYS.API_KEY, key.trim());
   }
 
-  // --- User & Streak ---
+  // --- User & Role Management ---
   public getUser(): UserProfile {
     if (!this.isClient()) return DEMO_USER;
     const raw = localStorage.getItem(STORAGE_KEYS.USER);
@@ -127,6 +137,29 @@ export class AppStore {
   public updateUser(user: UserProfile) {
     if (!this.isClient()) return;
     localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+    window.dispatchEvent(new Event('gapfinder_user_changed'));
+  }
+
+  public switchRole(role: 'student' | 'teacher') {
+    if (!this.isClient()) return;
+    if (role === 'teacher') {
+      this.updateUser(DEMO_TEACHER);
+    } else {
+      this.updateUser(DEMO_STUDENT);
+    }
+  }
+
+  // --- Class Overview Data (for Teachers) ---
+  public getClassData(): ClassOverviewData {
+    if (!this.isClient()) return DEMO_CLASS_DATA;
+    const raw = localStorage.getItem(STORAGE_KEYS.CLASS);
+    return raw ? JSON.parse(raw) : DEMO_CLASS_DATA;
+  }
+
+  public updateClassData(data: ClassOverviewData) {
+    if (!this.isClient()) return;
+    localStorage.setItem(STORAGE_KEYS.CLASS, JSON.stringify(data));
+    window.dispatchEvent(new Event('gapfinder_class_changed'));
   }
 
   public recordDailyActivity(): { streakIncreased: boolean; xpAwarded: number } {
