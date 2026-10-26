@@ -16,12 +16,8 @@ import {
   Key,
   RotateCcw,
   Search,
-  ChevronRight,
-  Flame,
-  Zap,
   PanelLeftClose,
   PanelLeftOpen,
-  User,
 } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
 import { AppStore } from '@/lib/store';
@@ -31,7 +27,7 @@ import StreakCelebration from './StreakCelebration';
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme, toggleTheme } = useTheme();
   const [collapsed, setCollapsed] = useState(false);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isApiKeyOpen, setIsApiKeyOpen] = useState(false);
@@ -213,28 +209,35 @@ export default function Sidebar() {
 
         {/* Bottom Area: Theme Switcher & Profile Card */}
         <div className="p-3 border-t border-slate-100 dark:border-slate-800/80 space-y-2.5">
-          {/* Light / Dark Mode Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-            title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
-          >
-            <div className="flex items-center gap-2.5">
-              {theme === 'light' ? (
-                <Sun className="w-4 h-4 text-amber-500 shrink-0" />
-              ) : (
-                <Moon className="w-4 h-4 text-indigo-400 shrink-0" />
-              )}
-              {!collapsed && (
-                <span>{theme === 'light' ? 'Light Theme' : 'Dark Theme'}</span>
-              )}
-            </div>
-            {!collapsed && (
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                Toggle
-              </span>
-            )}
-          </button>
+          {/* Segmented Light / Dark Toggle Switch */}
+          <div className="flex items-center rounded-xl bg-slate-100 dark:bg-slate-800 p-1 border border-slate-200 dark:border-slate-700">
+            <button
+              type="button"
+              onClick={() => setTheme('light')}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                theme === 'light'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title="Switch to Light Mode"
+            >
+              <Sun className={`w-3.5 h-3.5 ${theme === 'light' ? 'text-amber-500' : 'text-slate-400'}`} />
+              {!collapsed && <span>Light</span>}
+            </button>
+            <button
+              type="button"
+              onClick={() => setTheme('dark')}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                theme === 'dark'
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title="Switch to Dark Mode"
+            >
+              <Moon className={`w-3.5 h-3.5 ${theme === 'dark' ? 'text-indigo-400' : 'text-slate-400'}`} />
+              {!collapsed && <span>Dark</span>}
+            </button>
+          </div>
 
           {/* User Profile Pill */}
           <div className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">

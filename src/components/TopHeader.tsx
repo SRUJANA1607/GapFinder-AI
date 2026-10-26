@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Flame, Zap, Key, Bell, ShieldCheck, Sun, Moon } from 'lucide-react';
+import { Flame, Zap, Sun, Moon } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
 import { AppStore } from '@/lib/store';
 import { UserProfile } from '@/lib/types';
 
 export default function TopHeader() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, setTheme } = useTheme();
   const [user, setUser] = useState<UserProfile | null>(null);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ export default function TopHeader() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-20 h-14 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 flex items-center justify-between transition-colors">
+    <header className="sticky top-0 z-20 h-14 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 flex items-center justify-between transition-colors shadow-2xs">
       {/* Greeting */}
       <div className="flex items-center gap-2">
         <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
@@ -49,16 +49,23 @@ export default function TopHeader() {
           <span className="text-[10px] text-indigo-500 font-normal">({user?.xp || 0} XP)</span>
         </div>
 
-        {/* Theme Toggle Button */}
+        {/* 1-Click Theme Toggle Button with explicit title and icon */}
         <button
+          type="button"
           onClick={toggleTheme}
-          className="rounded-xl p-2 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-          title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition shadow-2xs text-xs font-semibold"
+          title={`Click to switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
         >
           {theme === 'light' ? (
-            <Moon className="w-4 h-4 text-slate-700" />
+            <>
+              <Sun className="w-4 h-4 text-amber-500" />
+              <span className="hidden sm:inline">Light</span>
+            </>
           ) : (
-            <Sun className="w-4 h-4 text-amber-400" />
+            <>
+              <Moon className="w-4 h-4 text-indigo-400" />
+              <span className="hidden sm:inline">Dark</span>
+            </>
           )}
         </button>
       </div>
