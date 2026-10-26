@@ -111,31 +111,33 @@ Try asking about any diagnosed weak gap, or select a suggested topic below!`,
   ];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <Bot className="w-6 h-6 text-purple-400" />
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Explain-This-Topic Assistant</h1>
+            <Bot className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
+              Explain-This-Topic Assistant
+            </h1>
           </div>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
             Grounded Socratic tutor powered by vector retrieval over your uploaded course materials.
           </p>
         </div>
 
         {/* Grounding Guarantee Badge */}
-        <div className="rounded-2xl bg-indigo-950/40 border border-indigo-500/30 px-3.5 py-2 flex items-center gap-2 text-xs text-indigo-300">
-          <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+        <div className="rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-3 py-1.5 flex items-center gap-2 text-xs text-emerald-800 dark:text-emerald-300 font-semibold shadow-2xs">
+          <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <span>Strictly Grounded in Uploaded Materials • Zero Hallucinations</span>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Chat Main Area (8 cols) */}
-        <div className="lg:col-span-8 flex flex-col h-[650px] rounded-3xl bg-slate-900/80 border border-slate-800 shadow-2xl overflow-hidden">
+        <div className="lg:col-span-8 flex flex-col h-[650px] clean-card overflow-hidden">
           {/* Chat Messages Log */}
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
             {messages.map((msg) => {
               const isAssistant = msg.sender === 'assistant';
 
@@ -149,19 +151,19 @@ Try asking about any diagnosed weak gap, or select a suggested topic below!`,
                   <div
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-white ${
                       isAssistant
-                        ? 'bg-gradient-to-tr from-indigo-600 to-purple-600 shadow-md shadow-indigo-600/30'
+                        ? 'bg-indigo-600 shadow-xs'
                         : 'bg-slate-700'
                     }`}
                   >
                     {isAssistant ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
                   </div>
 
-                  <div className={`max-w-[85%] space-y-3 ${isAssistant ? '' : 'text-right'}`}>
+                  <div className={`max-w-[85%] space-y-2.5 ${isAssistant ? '' : 'text-right'}`}>
                     <div
                       className={`rounded-2xl p-4 text-left whitespace-pre-wrap ${
                         isAssistant
-                          ? 'bg-slate-950/90 border border-slate-800 text-slate-200'
-                          : 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25'
+                          ? 'bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 text-slate-800 dark:text-slate-200'
+                          : 'bg-indigo-600 text-white shadow-xs'
                       }`}
                     >
                       {msg.text}
@@ -169,12 +171,12 @@ Try asking about any diagnosed weak gap, or select a suggested topic below!`,
 
                     {/* Citations block for assistant messages */}
                     {isAssistant && msg.citations && msg.citations.length > 0 && (
-                      <div className="space-y-2 pt-1 text-left">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-                          <BookOpen className="w-3.5 h-3.5 text-indigo-400" />
+                      <div className="space-y-1.5 pt-1 text-left">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+                          <BookOpen className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
                           <span>Verifiable Citations ({msg.citations.length}):</span>
                         </span>
-                        <div className="grid grid-cols-1 gap-2">
+                        <div className="grid grid-cols-1 gap-1.5">
                           {msg.citations.map((cit, idx) => (
                             <CitationCard
                               key={idx}
@@ -192,8 +194,8 @@ Try asking about any diagnosed weak gap, or select a suggested topic below!`,
             })}
 
             {loading && (
-              <div className="flex items-center gap-2 text-xs text-slate-400 pl-11">
-                <Sparkles className="w-4 h-4 text-indigo-400 animate-spin" />
+              <div className="flex items-center gap-2 text-xs text-slate-500 pl-11">
+                <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400 animate-spin" />
                 <span>Searching vector store and synthesizing grounded response...</span>
               </div>
             )}
@@ -202,14 +204,16 @@ Try asking about any diagnosed weak gap, or select a suggested topic below!`,
           </div>
 
           {/* Prompt Pills Suggestions */}
-          <div className="px-4 py-2 border-t border-slate-800/80 bg-slate-950/40 flex items-center gap-2 overflow-x-auto scrollbar-none">
-            <span className="text-[10px] font-semibold text-slate-400 shrink-0">Quick Ask:</span>
+          <div className="px-4 py-2 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-center gap-2 overflow-x-auto scrollbar-none">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider shrink-0">
+              Quick Ask:
+            </span>
             {suggestionPills.map((pill, i) => (
               <button
                 key={i}
                 type="button"
                 onClick={() => sendMessage(pill)}
-                className="rounded-full bg-slate-800/80 hover:bg-slate-800 hover:text-white border border-slate-700/60 px-3 py-1 text-[11px] text-slate-300 shrink-0 transition"
+                className="rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-300 hover:border-indigo-400 shrink-0 transition shadow-2xs"
               >
                 {pill}
               </button>
@@ -219,19 +223,19 @@ Try asking about any diagnosed weak gap, or select a suggested topic below!`,
           {/* Chat Input Bar */}
           <form
             onSubmit={handleFormSubmit}
-            className="p-3 bg-slate-950 border-t border-slate-800 flex items-center gap-2"
+            className="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2"
           >
             <input
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="Ask anything grounded in your course materials (e.g. 'How does Peterson algorithm solve mutual exclusion?')..."
-              className="flex-1 rounded-xl bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none"
+              placeholder="Ask anything grounded in your course materials..."
+              className="flex-1 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 px-4 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:border-indigo-500 focus:outline-none"
             />
             <button
               type="submit"
               disabled={loading || !inputText.trim()}
-              className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25 hover:from-indigo-600 hover:to-purple-700 transition disabled:opacity-40"
+              className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition disabled:opacity-40"
             >
               <Send className="w-4 h-4" />
             </button>
@@ -240,42 +244,42 @@ Try asking about any diagnosed weak gap, or select a suggested topic below!`,
 
         {/* Right Column: RAG Architecture Transparency Panel (4 cols) */}
         <div className="lg:col-span-4 space-y-4">
-          <div className="rounded-3xl bg-slate-900/80 border border-slate-800 p-6 shadow-xl space-y-4">
-            <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
-              <Info className="w-4 h-4 text-indigo-400" />
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+          <div className="clean-card p-5 space-y-4 shadow-sm">
+            <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-2.5">
+              <Info className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <h2 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                 RAG Architecture Transparency
               </h2>
             </div>
 
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
               GapFinder AI maintains a strict mathematical separation between <strong>Retrieval</strong> and <strong>Generation</strong>:
             </p>
 
-            <div className="space-y-3 text-xs">
-              <div className="rounded-xl bg-slate-950/70 border border-slate-800 p-3 space-y-1">
-                <span className="font-bold text-indigo-300 block">1. Semantic Chunking</span>
-                <p className="text-slate-400 leading-normal">
+            <div className="space-y-2.5 text-xs">
+              <div className="rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 p-3 space-y-0.5">
+                <span className="font-bold text-indigo-700 dark:text-indigo-300 block">1. Semantic Chunking</span>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px] leading-normal">
                   Syllabus, textbooks, and past papers are segmented by chapter and topic headers with 100-character overlap.
                 </p>
               </div>
 
-              <div className="rounded-xl bg-slate-950/70 border border-slate-800 p-3 space-y-1">
-                <span className="font-bold text-purple-300 block">2. Vector Cosine Ranking</span>
-                <p className="text-slate-400 leading-normal">
+              <div className="rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 p-3 space-y-0.5">
+                <span className="font-bold text-purple-700 dark:text-purple-300 block">2. Vector Cosine Ranking</span>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px] leading-normal">
                   When you submit a query, the top 4 chunks with highest cosine similarity score are retrieved from the index.
                 </p>
               </div>
 
-              <div className="rounded-xl bg-slate-950/70 border border-slate-800 p-3 space-y-1">
-                <span className="font-bold text-emerald-300 block">3. Grounded Synthesis</span>
-                <p className="text-slate-400 leading-normal">
+              <div className="rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 p-3 space-y-0.5">
+                <span className="font-bold text-emerald-700 dark:text-emerald-300 block">3. Grounded Synthesis</span>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px] leading-normal">
                   Gemini generates explanations strictly constrained within the retrieved chunk context, citing exact source documents and pages.
                 </p>
               </div>
             </div>
 
-            <div className="rounded-2xl bg-indigo-950/30 border border-indigo-500/20 p-3 text-[11px] text-indigo-300">
+            <div className="rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/50 p-2.5 text-[11px] text-indigo-800 dark:text-indigo-300">
               💡 <strong>Pro Tip:</strong> Click &ldquo;Inspect Chunks&rdquo; on the Upload page to view the exact raw chunks used by this assistant!
             </div>
           </div>
@@ -290,7 +294,7 @@ export default function AssistantPage() {
     <Suspense
       fallback={
         <div className="max-w-6xl mx-auto p-12 text-center text-slate-400">
-          <Sparkles className="w-8 h-8 text-indigo-400 animate-spin mx-auto mb-2" />
+          <Sparkles className="w-8 h-8 text-indigo-600 dark:text-indigo-400 animate-spin mx-auto mb-2" />
           <p className="text-xs">Loading Grounded Assistant...</p>
         </div>
       }

@@ -1,0 +1,276 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  Home,
+  UploadCloud,
+  Compass,
+  FileQuestion,
+  Sparkles,
+  CalendarCheck,
+  Bot,
+  Sun,
+  Moon,
+  Key,
+  RotateCcw,
+  Search,
+  ChevronRight,
+  Flame,
+  Zap,
+  PanelLeftClose,
+  PanelLeftOpen,
+  User,
+} from 'lucide-react';
+import { useTheme } from './ThemeProvider';
+import { AppStore } from '@/lib/store';
+import { UserProfile } from '@/lib/types';
+import ApiKeyModal from './ApiKeyModal';
+import StreakCelebration from './StreakCelebration';
+
+export default function Sidebar() {
+  const pathname = usePathname();
+  const { theme, toggleTheme } = useTheme();
+  const [collapsed, setCollapsed] = useState(false);
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [isApiKeyOpen, setIsApiKeyOpen] = useState(false);
+  const [hasApiKey, setHasApiKey] = useState(false);
+  const [showStreakModal, setShowStreakModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const store = AppStore.getInstance();
+    store.initStore();
+    setUser(store.getUser());
+    setHasApiKey(!!store.getApiKey());
+  }, []);
+
+  const handleResetDemo = () => {
+    if (confirm('Reset to standard preloaded Operating Systems demo dataset for judging evaluation?')) {
+      const store = AppStore.getInstance();
+      store.resetToDemo();
+      window.location.reload();
+    }
+  };
+
+  const mainNavItems = [
+    { href: '/dashboard', label: 'Home', icon: Home },
+    { href: '/upload', label: 'Upload Materials', icon: UploadCloud, badge: 'Upload' },
+    { href: '/topics', label: 'Topic Map', icon: Compass },
+    { href: '/quiz', label: 'Diagnostic Quiz', icon: FileQuestion },
+    { href: '/gap-report', label: 'Gap Report', icon: Sparkles },
+    { href: '/revision-plan', label: 'Revision Plan', icon: CalendarCheck },
+    { href: '/assistant', label: 'Explain-This-Topic', icon: Bot, isNew: true },
+  ];
+
+  const filteredNav = searchQuery.trim()
+    ? mainNavItems.filter((item) =>
+        item.label.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : mainNavItems;
+
+  return (
+    <>
+      <aside
+        className={`shrink-0 h-screen sticky top-0 flex flex-col justify-between border-r transition-all duration-300 z-30 select-none ${
+          collapsed ? 'w-20' : 'w-64'
+        } bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm`}
+      >
+        {/* Top Header & Brand */}
+        <div className="p-4 border-b border-slate-100 dark:border-slate-800/80">
+          <div className="flex items-center justify-between">
+            <Link href="/dashboard" className="flex items-center gap-2.5 overflow-hidden">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-500/20">
+                <Compass className="w-5 h-5" />
+              </div>
+              {!collapsed && (
+                <div className="truncate">
+                  <div className="flex items-center gap-1 font-extrabold text-sm tracking-tight text-slate-900 dark:text-white">
+                    <span>GapFinder</span>
+                    <span className="text-indigo-600 dark:text-indigo-400 font-black">AI</span>
+                  </div>
+                  <span className="text-[10px] font-medium text-slate-400 block -mt-0.5 tracking-wider uppercase">
+                    Diagnostic Hub
+                  </span>
+                </div>
+              )}
+            </Link>
+
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              className="rounded-lg p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              {collapsed ? (
+                <PanelLeftOpen className="w-4 h-4" />
+              ) : (
+                <PanelLeftClose className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+
+          {/* Search Box */}
+          {!collapsed && (
+            <div className="mt-3 relative">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search..."
+                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Main Nav Items */}
+        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-6">
+          {/* Main Navigation */}
+          <div className="space-y-1">
+            {!collapsed && (
+              <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                Learning & Diagnostics
+              </span>
+            )}
+            {filteredNav.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href;
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                    isActive
+                      ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold shadow-sm'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                  title={item.label}
+                >
+                  <Icon
+                    className={`w-4 h-4 shrink-0 ${
+                      isActive
+                        ? 'text-indigo-600 dark:text-indigo-400'
+                        : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300'
+                    }`}
+                  />
+                  {!collapsed && (
+                    <span className="truncate flex-1">{item.label}</span>
+                  )}
+                  {!collapsed && item.badge && (
+                    <span className="rounded-md bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 text-[9px] font-bold">
+                      {item.badge}
+                    </span>
+                  )}
+                  {!collapsed && item.isNew && (
+                    <span className="rounded-md bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 px-1.5 py-0.5 text-[9px] font-bold">
+                      RAG
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Tools & Evaluator Actions */}
+          <div className="space-y-1 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+            {!collapsed && (
+              <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                Evaluator Hub
+              </span>
+            )}
+
+            <button
+              onClick={() => setIsApiKeyOpen(true)}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              title="Configure Gemini API Key"
+            >
+              <Key className="w-4 h-4 text-slate-400 shrink-0" />
+              {!collapsed && (
+                <div className="flex items-center justify-between w-full">
+                  <span>Gemini API Key</span>
+                  <span
+                    className={`h-2 w-2 rounded-full ${
+                      hasApiKey ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'
+                    }`}
+                  />
+                </div>
+              )}
+            </button>
+
+            <button
+              onClick={handleResetDemo}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              title="Reset Demo Dataset"
+            >
+              <RotateCcw className="w-4 h-4 text-slate-400 shrink-0" />
+              {!collapsed && <span>Reset Demo Data</span>}
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom Area: Theme Switcher & Profile Card */}
+        <div className="p-3 border-t border-slate-100 dark:border-slate-800/80 space-y-2.5">
+          {/* Light / Dark Mode Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+            title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
+          >
+            <div className="flex items-center gap-2.5">
+              {theme === 'light' ? (
+                <Sun className="w-4 h-4 text-amber-500 shrink-0" />
+              ) : (
+                <Moon className="w-4 h-4 text-indigo-400 shrink-0" />
+              )}
+              {!collapsed && (
+                <span>{theme === 'light' ? 'Light Theme' : 'Dark Theme'}</span>
+              )}
+            </div>
+            {!collapsed && (
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                Toggle
+              </span>
+            )}
+          </button>
+
+          {/* User Profile Pill */}
+          <div className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-bold text-xs">
+              {user?.name ? user.name.charAt(0) : 'A'}
+            </div>
+            {!collapsed && (
+              <div className="truncate flex-1">
+                <span className="text-xs font-bold text-slate-900 dark:text-white block truncate">
+                  {user?.name || 'Alex Mercer'}
+                </span>
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 block truncate">
+                  {user?.role === 'judge' ? 'Demo Evaluator' : 'Student'} • Lvl {user?.level || 1}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      </aside>
+
+      {/* Gemini API Key Modal */}
+      <ApiKeyModal
+        isOpen={isApiKeyOpen}
+        onClose={() => setIsApiKeyOpen(false)}
+        onKeySaved={(k) => setHasApiKey(!!k)}
+      />
+
+      {/* Streak celebration popup */}
+      {user && (
+        <StreakCelebration
+          show={showStreakModal}
+          streakDays={user.streakDays}
+          xpEarned={25}
+          onClose={() => setShowStreakModal(false)}
+        />
+      )}
+    </>
+  );
+}
