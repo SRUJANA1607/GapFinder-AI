@@ -9,10 +9,20 @@ export async function GET(request: Request) {
   const errorDescription = searchParams.get('error_description');
   const next = searchParams.get('next');
 
+  // Resolve true origin behind reverse proxies (e.g. Vercel) while keeping localhost in local dev
+  const forwardedHost = request.headers.get('x-forwarded-host');
+  const forwardedProto = request.headers.get('x-forwarded-proto') || 'https';
+  const isLocalEnv = process.env.NODE_ENV === 'development';
+  const redirectBase = isLocalEnv
+    ? origin
+    : forwardedHost
+    ? `${forwardedProto}://${forwardedHost}`
+    : origin;
+
   // Handle provider cancellation or OAuth errors
   if (error || errorDescription) {
     const errorMsg = errorDescription || error || 'OAuth authentication failed';
-    return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(errorMsg)}`);
+    return NextResponse.redirect(`${redirectBase}/login?error=${encodeURIComponent(errorMsg)}`);
   }
 
   if (code) {
@@ -40,19 +50,21 @@ export async function GET(request: Request) {
         role = data.user.app_metadata?.role || data.user.user_metadata?.role || 'student';
       }
 
-      const targetPath = next || (role === 'teacher' ? '/teacher' : '/dashboard');
-      const redirectResponse = NextResponse.redirect(`${origin}${targetPath}`);
+      // Ensure next param is a valid relative path to prevent open redirect vulnerabilities
+      const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : null;
+      const targetPath = safeNext || (role === 'teacher' ? '/teacher' : '/dashboard');
+      const redirectResponse = NextResponse.redirect(`${redirectBase}${targetPath}`);
       cookieStore.getAll().forEach((cookie) => {
         redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
       });
       return redirectResponse;
     } else if (exchangeError) {
       return NextResponse.redirect(
-        `${origin}/login?error=${encodeURIComponent(exchangeError.message)}`
+        `${redirectBase}/login?error=${encodeURIComponent(exchangeError.message)}`
       );
     }
   }
 
   // If error or code missing, return to login with error param
-  return NextResponse.redirect(`${origin}/login?error=auth_callback_failed`);
+  return NextResponse.redirect(`${redirectBase}/login?error=auth_callback_failed`);
 }
