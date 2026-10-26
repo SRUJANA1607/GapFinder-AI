@@ -7,7 +7,6 @@ import {
   Send,
   Sparkles,
   BookOpen,
-  Info,
   ShieldCheck,
   User,
 } from 'lucide-react';
@@ -133,9 +132,8 @@ Try asking about any diagnosed weak gap, or select a suggested topic below!`,
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Chat Main Area (8 cols) */}
-        <div className="lg:col-span-8 flex flex-col h-[650px] clean-card overflow-hidden">
+      {/* Chat Main Area */}
+      <div className="flex flex-col h-[650px] clean-card overflow-hidden shadow-xs">
           {/* Chat Messages Log */}
           <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
             {messages.map((msg) => {
@@ -241,50 +239,6 @@ Try asking about any diagnosed weak gap, or select a suggested topic below!`,
             </button>
           </form>
         </div>
-
-        {/* Right Column: RAG Architecture Transparency Panel (4 cols) */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="clean-card p-5 space-y-4 shadow-sm">
-            <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-2.5">
-              <Info className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-              <h2 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                RAG Architecture Transparency
-              </h2>
-            </div>
-
-            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-              GapFinder AI maintains a strict mathematical separation between <strong>Retrieval</strong> and <strong>Generation</strong>:
-            </p>
-
-            <div className="space-y-2.5 text-xs">
-              <div className="rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 p-3 space-y-0.5">
-                <span className="font-bold text-indigo-700 dark:text-indigo-300 block">1. Semantic Chunking</span>
-                <p className="text-slate-500 dark:text-slate-400 text-[11px] leading-normal">
-                  Syllabus, textbooks, and past papers are segmented by chapter and topic headers with 100-character overlap.
-                </p>
-              </div>
-
-              <div className="rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 p-3 space-y-0.5">
-                <span className="font-bold text-purple-700 dark:text-purple-300 block">2. Vector Cosine Ranking</span>
-                <p className="text-slate-500 dark:text-slate-400 text-[11px] leading-normal">
-                  When you submit a query, the top 4 chunks with highest cosine similarity score are retrieved from the index.
-                </p>
-              </div>
-
-              <div className="rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 p-3 space-y-0.5">
-                <span className="font-bold text-emerald-700 dark:text-emerald-300 block">3. Grounded Synthesis</span>
-                <p className="text-slate-500 dark:text-slate-400 text-[11px] leading-normal">
-                  Gemini generates explanations strictly constrained within the retrieved chunk context, citing exact source documents and pages.
-                </p>
-              </div>
-            </div>
-
-            <div className="rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/50 p-2.5 text-[11px] text-indigo-800 dark:text-indigo-300">
-              💡 <strong>Pro Tip:</strong> Click &ldquo;Inspect Chunks&rdquo; on the Upload page to view the exact raw chunks used by this assistant!
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

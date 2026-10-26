@@ -13,19 +13,19 @@ import {
   Bot,
   Sun,
   Moon,
-  Key,
-  RotateCcw,
   Search,
   PanelLeftClose,
   PanelLeftOpen,
   GraduationCap,
   Users,
+  User,
   LogOut,
-  ArrowRightLeft,
+  Loader2,
 } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
 import { AppStore } from '@/lib/store';
 import { UserProfile } from '@/lib/types';
+import { createClient } from '@/lib/supabase/client';
 import ApiKeyModal from './ApiKeyModal';
 import StreakCelebration from './StreakCelebration';
 
@@ -39,11 +39,44 @@ export default function Sidebar() {
   const [hasApiKey, setHasApiKey] = useState(false);
   const [showStreakModal, setShowStreakModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const refreshUser = () => {
+  const refreshUser = async () => {
     const store = AppStore.getInstance();
     store.initStore();
-    setUser(store.getUser());
+    let currentUser = store.getUser();
+
+    try {
+      const supabase = createClient();
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (authUser) {
+        const email = authUser.email || '';
+        const name =
+          authUser.user_metadata?.full_name ||
+          authUser.user_metadata?.name ||
+          (email ? email.split('@')[0] : 'Student');
+        const role = authUser.user_metadata?.role || (currentUser?.role || 'student');
+
+        if (!currentUser || currentUser.email !== email || currentUser.name !== name || currentUser.id !== authUser.id) {
+          currentUser = {
+            id: authUser.id,
+            name,
+            email,
+            role,
+            streakDays: currentUser?.streakDays || 1,
+            lastActiveDate: new Date().toISOString(),
+            xp: currentUser?.xp || 100,
+            level: currentUser?.level || 1,
+            badges: currentUser?.badges || [],
+          };
+          store.updateUser(currentUser);
+        }
+      }
+    } catch {
+      // Fall back to store
+    }
+
+    setUser(currentUser);
     setHasApiKey(!!store.getApiKey());
   };
 
@@ -62,6 +95,10 @@ export default function Sidebar() {
   };
 
   const handleRoleSwitch = (newRole: 'student' | 'teacher') => {
+    if (newRole === 'teacher' && user?.role !== 'teacher') {
+      alert('Access Restricted: The Teacher Dashboard requires an authorized teacher account. You are currently signed in as a student.');
+      return;
+    }
     const store = AppStore.getInstance();
     store.switchRole(newRole);
     if (newRole === 'teacher') {
@@ -71,10 +108,30 @@ export default function Sidebar() {
     }
   };
 
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        setIsLoggingOut(false);
+        alert(`Logout error: ${error.message}`);
+        return;
+      }
+    } catch (e: unknown) {
+      console.warn('Supabase sign out error:', e);
+    }
+    const store = AppStore.getInstance();
+    store.switchRole('student');
+    router.refresh();
+    router.push('/login');
+  };
+
   const isTeacher = user?.role === 'teacher';
 
   const studentNavItems = [
     { href: '/dashboard', label: 'My Dashboard', icon: Home },
+    { href: '/profile', label: 'My Profile', icon: User },
     { href: '/upload', label: 'Upload Materials', icon: UploadCloud, badge: 'Upload' },
     { href: '/topics', label: 'Topic Map & Weight', icon: Compass },
     { href: '/quiz', label: 'Diagnostic Quiz', icon: FileQuestion },
@@ -85,6 +142,7 @@ export default function Sidebar() {
 
   const teacherNavItems = [
     { href: '/teacher', label: 'Class Overview', icon: Users, badge: 'Class' },
+    { href: '/profile', label: 'Teacher Profile', icon: User },
     { href: '/upload?role=teacher', label: 'Upload Syllabus', icon: UploadCloud },
     { href: '/topics', label: 'Curriculum Topics', icon: Compass },
     { href: '/quiz', label: 'Diagnostic Quizzes', icon: FileQuestion },
@@ -144,38 +202,6 @@ export default function Sidebar() {
               )}
             </button>
           </div>
-
-          {/* Role Quick Switch Pill for Evaluators */}
-          {!collapsed && (
-            <div className="mt-3 p-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center">
-              <button
-                type="button"
-                onClick={() => handleRoleSwitch('student')}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
-                  !isTeacher
-                    ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs'
-                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-                }`}
-                title="Switch to Student Dashboard"
-              >
-                <GraduationCap className="w-3.5 h-3.5" />
-                <span>Student</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleRoleSwitch('teacher')}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
-                  isTeacher
-                    ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-xs'
-                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-                }`}
-                title="Switch to Teacher Dashboard"
-              >
-                <Users className="w-3.5 h-3.5" />
-                <span>Teacher</span>
-              </button>
-            </div>
-          )}
 
           {/* Search Box */}
           {!collapsed && (
@@ -251,48 +277,21 @@ export default function Sidebar() {
             })}
           </div>
 
-          {/* Evaluator Tools */}
-          <div className="space-y-1 pt-2 border-t border-slate-100 dark:border-slate-800/80">
-            {!collapsed && (
-              <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-                Evaluator Hub
-              </span>
-            )}
-
-            <Link
-              href="/login"
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-              title="Sign In / Switch Role"
-            >
-              <ArrowRightLeft className="w-4 h-4 text-slate-400 shrink-0" />
-              {!collapsed && <span>Switch Role / Sign In</span>}
-            </Link>
-
+          {/* Sign Out Action */}
+          <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80">
             <button
-              onClick={() => setIsApiKeyOpen(true)}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-              title="Configure Gemini API Key"
+              type="button"
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition disabled:opacity-60"
+              title="Sign Out of Account"
             >
-              <Key className="w-4 h-4 text-slate-400 shrink-0" />
-              {!collapsed && (
-                <div className="flex items-center justify-between w-full">
-                  <span>Gemini API Key</span>
-                  <span
-                    className={`h-2 w-2 rounded-full ${
-                      hasApiKey ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'
-                    }`}
-                  />
-                </div>
+              {isLoggingOut ? (
+                <Loader2 className="w-4 h-4 animate-spin text-rose-500 shrink-0" />
+              ) : (
+                <LogOut className="w-4 h-4 text-rose-500 shrink-0" />
               )}
-            </button>
-
-            <button
-              onClick={handleResetDemo}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-              title="Reset Demo Dataset"
-            >
-              <RotateCcw className="w-4 h-4 text-slate-400 shrink-0" />
-              {!collapsed && <span>Reset Demo Data</span>}
+              {!collapsed && <span>{isLoggingOut ? 'Signing Out...' : 'Sign Out'}</span>}
             </button>
           </div>
         </div>
@@ -329,27 +328,52 @@ export default function Sidebar() {
             </button>
           </div>
 
-          {/* User Profile Pill */}
-          <div className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
-            <div
-              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-bold text-xs ${
-                isTeacher
-                  ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300'
-                  : 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300'
-              }`}
+          {/* User Profile Card & Navigation */}
+          <div className="flex items-center gap-1.5 p-1.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800/80">
+            <Link
+              href="/profile"
+              className="flex items-center gap-2.5 p-1 flex-1 min-w-0 rounded-lg group focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              title="View and edit your profile"
+              aria-label="View and edit your profile"
             >
-              {user?.name ? user.name.charAt(0) : 'A'}
-            </div>
-            {!collapsed && (
-              <div className="truncate flex-1">
-                <span className="text-xs font-bold text-slate-900 dark:text-white block truncate">
-                  {user?.name || (isTeacher ? 'Prof. Sarah Jenkins' : 'Alex Mercer')}
-                </span>
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 block truncate">
-                  {isTeacher ? 'Course Instructor' : 'Student'} • Lvl {user?.level || 1}
-                </span>
+              <div
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-bold text-xs transition-transform group-hover:scale-105 shadow-xs ${
+                  isTeacher
+                    ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300'
+                    : 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300'
+                }`}
+              >
+                {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
               </div>
-            )}
+              {!collapsed && (
+                <div className="truncate flex-1 text-left">
+                  <span className="text-xs font-bold text-slate-900 dark:text-white block truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                    {user?.name || (isTeacher ? 'Prof. Sarah Jenkins' : 'Alex Mercer')}
+                  </span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 block truncate group-hover:text-slate-700 dark:group-hover:text-slate-300">
+                    {isTeacher ? 'Course Instructor' : 'Student'} • View Profile
+                  </span>
+                </div>
+              )}
+            </Link>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleLogout();
+              }}
+              disabled={isLoggingOut}
+              className="p-1.5 shrink-0 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-rose-500"
+              title="Log out of account"
+              aria-label="Log out of account"
+            >
+              {isLoggingOut ? (
+                <Loader2 className="w-4 h-4 animate-spin text-rose-500" />
+              ) : (
+                <LogOut className="w-4 h-4" />
+              )}
+            </button>
           </div>
         </div>
       </aside>

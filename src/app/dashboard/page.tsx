@@ -20,7 +20,6 @@ import {
 } from 'lucide-react';
 import { AppStore } from '@/lib/store';
 import { Topic, RevisionPlan, UserProfile, StudyDocument } from '@/lib/types';
-import HeatmapGrid from '@/components/HeatmapGrid';
 import confetti from 'canvas-confetti';
 
 export default function DashboardPage() {
@@ -46,6 +45,12 @@ export default function DashboardPage() {
       );
       setReadinessScore(avg);
     }
+
+    const handleUserChanged = () => {
+      setUser(store.getUser());
+    };
+    window.addEventListener('gapfinder_user_changed', handleUserChanged);
+    return () => window.removeEventListener('gapfinder_user_changed', handleUserChanged);
   }, []);
 
   const handleTaskToggle = (dayNumber: number, taskId: string) => {
@@ -219,29 +224,6 @@ export default function DashboardPage() {
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Knowledge Gap Heatmap Section */}
-          <div className="clean-card p-5 sm:p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-              <div>
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                  Knowledge Gap Heatmap
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  Interactive topic mastery levels assessed from your syllabus and quiz results.
-                </p>
-              </div>
-              <Link
-                href="/gap-report"
-                className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
-              >
-                <span>Full Diagnosis</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            <HeatmapGrid topics={topics} />
           </div>
         </div>
 

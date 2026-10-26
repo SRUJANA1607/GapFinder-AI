@@ -57,17 +57,15 @@ GapFinder AI enforces a strict mathematical and architectural separation between
 
 ---
 
-## 🚀 Live Demo & Evaluator Credentials
+## 🚀 Live Demo & Evaluator Access
 
-Evaluators and judges can test the full platform immediately without entering an API key or uploading files:
+Evaluators and judges can test the full platform immediately using the **1-Click Demo** buttons on the login screen:
 
-- **Role:** Judge / Evaluator Mode
-- **Name:** Prof. Alex Mercer
-- **Demo Email:** `judge@gapfinder.ai`
-- **Demo Password:** `demo_judge_2026`
+- **Demo Student:** Instantly opens the student diagnostic workspace with pre-loaded Operating Systems syllabus, past exam questions, gap heatmap, and revision engine.
+- **Demo Teacher:** Instantly opens the teacher analytics dashboard with cohort mastery metrics and cross-student gap distribution.
 - **Pre-Loaded Course:** CS301 Operating Systems & Concurrency
-  - 4 Pre-indexed documents (Syllabus, Textbook Chapters 4 & 7, Lecture Notes, Past Papers 2023-2025)
-  - 5 Mapped Topics with Pre-diagnosed Gaps (e.g. Banker's Algorithm - Weak, Belady's Anomaly - Weak)
+  - Pre-indexed documents (Syllabus, Textbook Chapters, Lecture Notes, Past Papers)
+  - Mapped Topics with Pre-diagnosed Gaps (e.g. Banker's Algorithm, Belady's Anomaly)
   - Active 4-Day Revision Streak & Level 3 XP
 
 ---

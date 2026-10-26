@@ -126,6 +126,17 @@ export interface UserProfile {
   name: string;
   email: string;
   role: 'student' | 'judge' | 'teacher';
+  phone?: string;
+  bio?: string;
+  institution?: string;
+  degree?: string;
+  department?: string;
+  yearSemester?: string;
+  rollNumber?: string;
+  academicInterests?: string;
+  avatarUrl?: string;
+  emailVerified?: boolean;
+  createdAt?: string;
   streakDays: number;
   lastActiveDate: string;
   xp: number;
